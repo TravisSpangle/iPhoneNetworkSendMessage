@@ -8,12 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RootViewController : UITableViewController
+@interface RootViewController : UITableViewController<NSNetServiceBrowserDelegate, NSNetServiceDelegate>
 {
 
     NSNetServiceBrowser*	browser_;
 	NSMutableArray*			services_;	
 
 }
+
+@property (readwrite, retain) NSNetServiceBrowser *browser_;
 
 @end
