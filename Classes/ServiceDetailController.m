@@ -64,19 +64,27 @@
 
 - (void) connectToService
 {
+    NSLog(@"%s",__PRETTY_FUNCTION__);
+    
 	// We assume the NSNetService has been resolved at this point
 	
 	// NSNetService makes it easy for us to connect, we don't have to do any socket management
 		
-	// < ADD CODE HERE : get the output stream from the service >
-	
+    [service_ getInputStream:NULL outputStream:&outputStream_];
+    
 	// if we wanted, we could scheudled notifcations or other run loop
 	// based reading of the input stream to get messages back from the
 	// service we connected to
 	
-	 
-	 // < ADD CODE HERE : statuaLabel to reflect if we connected or not. 
-	 //    if we could not get the output stream, we could not connect >
+    if ( outputStream_ != nil )
+    {
+        [outputStream_ open];
+        statusLabel_.text = @"Connected to service.";
+    }
+    else
+    {
+        statusLabel_.text = @"Could not connect to service";
+    }
 	
 }
 
@@ -91,9 +99,12 @@
 		return;
 	}
 		
-	// < ADD CODE HERE : Get the message from the view and write it out to the
-	//  outputStream_. You can do a synchronous write >
-	
+    NSString* messageText = messageTextView_.text;
+
+    const uint8_t* messageBuffer =(const uint8_t*)[messageText UTF8String];
+    NSUInteger length = [messageText
+                         lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    [outputStream_ write:messageBuffer maxLength:length];	
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

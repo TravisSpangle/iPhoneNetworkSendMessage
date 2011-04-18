@@ -50,6 +50,8 @@
 
     [services_ addObject:aNetService];
     
+    NSLog(@"Host Name:%@",[aNetService hostName]);
+    
     [aNetService setDelegate:self];
     [aNetService resolveWithTimeout:5.0];
     
@@ -160,15 +162,22 @@
 {
 	NSNetService* selectedService = [services_ objectAtIndex:indexPath.row];
 
-	// <ADD SOME CODE HERE : 
-	// if the selection was not resolved, try to resolve it again, but don't attempt
-	// to bring up the details >
-	
-    ServiceDetailController* detailController = [[ServiceDetailController alloc] initWithNibName:@"ServiceDetailController" bundle:nil];
-	
-	detailController.service = selectedService;
-    [[self navigationController] pushViewController:detailController animated:YES];
-    [detailController release];	
+	NSLog(@"Host Name:%@",[selectedService hostName]);
+    if ([[selectedService hostName] isEqual:[NSNull null]]) {
+        
+        //todo: alert user
+        NSLog(@"Host is not resovled and cannot connect");  	
+        
+    }else{
+        
+        ServiceDetailController* detailController = [[ServiceDetailController alloc] initWithNibName:@"ServiceDetailController" bundle:nil];
+        
+        detailController.service = selectedService;
+        [[self navigationController] pushViewController:detailController animated:YES];
+        [detailController release];
+        
+    }
+    
 }
 
 
