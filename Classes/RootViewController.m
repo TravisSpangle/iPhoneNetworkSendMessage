@@ -83,6 +83,7 @@
 - (void)netServiceDidResolveAddress:(NSNetService *)sender
 {
 	NSLog(@"RESOLVED net service with name %@ and type %@", [sender name], [sender type]);
+    [self.tableView reloadData];
 }
 
 - (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary *)errorDict
