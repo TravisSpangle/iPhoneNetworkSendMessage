@@ -32,14 +32,14 @@
 #pragma mark -
 #pragma mark NSNetService
 
-// < YOU NEED TO MAKE ALL THESE METHODS DO THE RIGHT THING >
-
-
-
 - (void) startServiceSearch
 {
-	
+    browser_ = [[NSNetServiceBrowser alloc] init];
+    [[self browser_] setDelegate:self];
+    [browser_ searchForServicesOfType:@"_uwcelistener._tcp" inDomain:@""];
+
 	NSLog(@"Started browsing for services: %@", browser_);	
+    
 }
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser 
@@ -54,7 +54,7 @@
     [aNetService resolveWithTimeout:5.0];
     
     if(!moreComing){
-        NSLog(@"Reloading table data:\n\t %@", services_);
+        NSLog(@"\tReloading table data");
         [self.tableView reloadData];
     }
 }
@@ -64,7 +64,14 @@
                moreComing:(BOOL)moreComing 
 {
     NSLog(@"Removing service");
-	
+    
+    [services_ removeObject:aNetService];
+	[aNetService stop];
+    
+    if(!moreComing){
+        NSLog(@"\tReloading table data");
+        [self.tableView reloadData];
+    }
 }
 
 - (void)netServiceWillResolve:(NSNetService *)sender
@@ -92,12 +99,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	
-    browser_ = [[NSNetServiceBrowser alloc] init]; 
-
-   [[self browser_] setDelegate:self];
     
-    [browser_ searchForServicesOfType:@"_uwcelistener._tcp" inDomain:@""];
+    [self startServiceSearch];
 
     services_ = [[NSMutableArray alloc] init];
     //we'll need to release this
@@ -118,13 +121,11 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
     return [services_ count];
-    NSLog(@"%s\n\t%d",__PRETTY_FUNCTION__, [services_ count]);
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"%s",__PRETTY_FUNCTION__);
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
